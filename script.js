@@ -1,11 +1,11 @@
 let weather = {
-  apikey: "4b879520f2aa4c72f29412a4694e4005",
+  openweatherapikey: "4b879520f2aa4c72f29412a4694e4005",
   fetchWeather: function (city) {
     fetch(
       "https://api.openweathermap.org/data/2.5/weather?q=" +
         city +
         "&units=imperial&appid=" +
-        this.apikey
+        this.openweatherapikey
     )
       .then((response) => response.json())
       .then((data) => this.displayWeather(data));
@@ -15,7 +15,6 @@ let weather = {
     const { icon, description } = data.weather[0];
     const { temp, humidity } = data.main;
     const { speed } = data.wind;
-    console.log(name, icon, description, temp, humidity, speed);
 
     document.querySelector(".city").innerText = "Weather in " + name;
     document.querySelector(".icon").src =
@@ -26,23 +25,51 @@ let weather = {
       "Humidity: " + humidity + "%";
     document.querySelector(".wind").innerText = "Wind speed: " + speed + " mph";
     document.querySelector(".weather").classList.remove("loading");
-    searchName = name.replace(/\s+/g, "+");
-    document.body.style.backgroundImage =
-      "url(https://source.unsplash.com/1600x900/?" + searchName + ")";
+    background.fetchBackground(name);
   },
   search: function () {
     this.fetchWeather(document.querySelector(".search-bar").value);
   },
 };
 
+let background = {
+  unsplashApiKey: "dT1iy68_jAh2mRVEvz9MBxGqwn0CCf6BNIB8MUnITcU",
+  fetchBackground: function (city) {
+    fetch(
+      "https://api.unsplash.com/search/photos/?query=" +
+        city +
+        "&client_id=" +
+        this.unsplashApiKey
+    )
+      .then((response) => response.json())
+      .then((data) => this.displayBackground(data));
+  },
+  displayBackground: function (data) {
+    let randomNumber = Math.trunc(Math.random() * 6);
+
+    const { total } = data;
+    let foundPics = total;
+
+    if (foundPics === 0) {
+      document.body.style.backgroundImage =
+        "url(https://source.unsplash.com/1600x900/?landscape)";
+    } else {
+      const { regular } = data.results[randomNumber].urls;
+      document.body.style.backgroundImage = "url(" + regular + ")";
+    }
+  },
+};
+
 document.querySelector(".search-btn").addEventListener("click", function () {
   weather.search();
+  //   background.set();
 });
 document
   .querySelector(".search-bar")
   .addEventListener("keyup", function (event) {
     if (event.key === "Enter") {
       weather.search();
+      //   background.set();
     }
   });
 
