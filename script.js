@@ -1,5 +1,5 @@
 let weather = {
-  openweatherapikey: "4b879520f2aa4c72f29412a4694e4005",
+  openweatherapikey: config.OWM_API_KEY,
   fetchWeather: function (city) {
     fetch(
       "https://api.openweathermap.org/data/2.5/weather?q=" +
@@ -33,7 +33,7 @@ let weather = {
 };
 
 let background = {
-  unsplashApiKey: "dT1iy68_jAh2mRVEvz9MBxGqwn0CCf6BNIB8MUnITcU",
+  unsplashApiKey: config.UNSPLASH_API_KEY,
   fetchBackground: function (city) {
     fetch(
       "https://api.unsplash.com/search/photos/?query=" +
@@ -45,11 +45,13 @@ let background = {
       .then((data) => this.displayBackground(data));
   },
   displayBackground: function (data) {
-    let randomNumber = Math.trunc(Math.random() * 6);
-
     const { total } = data;
     let foundPics = total;
+    let randomNumber = Math.trunc(
+      Math.random() * (foundPics >= 10 ? 10 : foundPics)
+    );
 
+    console.log(total);
     if (foundPics === 0) {
       document.body.style.backgroundImage =
         "url(https://source.unsplash.com/1600x900/?landscape)";
@@ -62,15 +64,13 @@ let background = {
 
 document.querySelector(".search-btn").addEventListener("click", function () {
   weather.search();
-  //   background.set();
 });
 document
   .querySelector(".search-bar")
   .addEventListener("keyup", function (event) {
     if (event.key === "Enter") {
       weather.search();
-      //   background.set();
     }
   });
 
-weather.fetchWeather("Camano");
+weather.fetchWeather("Seattle");
